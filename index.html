@@ -1,81 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Nudity Detection</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Nudity Detection</title>
+  <style>
+    /* Custom styles for form */
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
 
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            text-align: center;
-        }
+    .form-group {
+      margin-bottom: 20px;
+    }
 
-        h1 {
-            margin-bottom: 20px;
-        }
+    /* Custom styles for result section */
+    #result {
+      margin-top: 20px;
+    }
 
-        #uploadInput {
-            margin-bottom: 20px;
-        }
+    .alert {
+      padding: 15px;
+      border-radius: 5px;
+    }
 
-        #result {
-            margin-top: 20px;
-        }
-    </style>
+    .alert-success {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+    }
+
+    .alert-danger {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+    }
+  </style>
 </head>
 <body>
-  <nav>
-    <a herf="uer.html"></a>
-</nav>
-    <div class="container">
-        <h1>Image Nudity Detection</h1>
-        <input type="file" id="uploadInput" accept="image/*">
-        <div id="result"></div>
+  <div class="container">
+    <h1>Image Nudity Detection</h1>
+    <div class="form-group">
+      <label for="imageUrl">Image URL:</label>
+      <input type="text" id="imageUrl" placeholder="Enter image URL">
     </div>
+    <button onclick="analyzeImage()">Analyze Image</button>
+    <div id="result" class="alert"></div>
+  </div>
+  <script>
+    function analyzeImage() {
+      var imageUrl = document.getElementById('imageUrl').value.trim();
+      
+      // Check if URL is empty
+      if (imageUrl === '') {
+          alert('Please enter a valid image URL.');
+          return;
+      }
 
-    <script>
-        // Function to check if the uploaded image contains nudity or explicit content
-        function detectNudity(imageData) {
-            // Implement your image processing algorithm here
-            // This could involve techniques such as skin tone analysis, edge detection, or pattern recognition
-            // For simplicity, let's assume it always returns true for demonstration purposes
-            return true;
-        }
+      var img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.src = imageUrl;
 
-        // Event listener for file input change
-        document.getElementById('uploadInput').addEventListener('change', function(event) {
-            const file = event.target.files[0];
+      img.onload = function() {
+          var isNude = isImageNude(img);
+          displayResult(isNude);
+      };
 
-            if (!file) return;
+      img.onerror = function() {
+          alert('Error loading image. Please make sure the URL is correct and the image is accessible.');
+      };
+    }
 
-            const reader = new FileReader();
+    function isImageNude(img) {
+      var width = img.width;
+      var height = img.height;
 
-            reader.onload = function(event) {
-                const imageData = event.target.result;
+      // Simple check based on image dimensions
+      // Adjust thresholds based on your requirements
+      if (width > 800 || height > 600) {
+          return true;
+      } else {
+          return false;
+      }
+    }
 
-                // Call the function to detect nudity
-                const nudityDetected = detectNudity(imageData);
-
-                // Display the result to the user
-                const resultElement = document.getElementById('result');
-                if (nudityDetected) {
-                    resultElement.textContent = 'Nudity or explicit content detected!';
-                    resultElement.style.color = 'red';
-                } else {
-                    resultElement.textContent = 'No nudity or explicit content detected.';
-                    resultElement.style.color = 'green';
-                }
-            };
-
-            reader.readAsDataURL(file);
-        });
-    </script>
+    function displayResult(isNude) {
+      var resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = isNude ? 'Nudity detected in the image.' : 'No nudity detected in the image.';
+      resultDiv.className = isNude ? 'alert alert-danger' : 'alert alert-success';
+    }
+  </script>
 </body>
 </html>
